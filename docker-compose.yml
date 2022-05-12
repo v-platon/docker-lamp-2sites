@@ -1,0 +1,57 @@
+version: '3'
+services:
+    site1:
+        image: wordpress
+        restart: always
+        ports:
+            - 8081:80
+	    - 441:443
+        env_file:
+            - variables.env
+        environment: 
+            WORDPRESS_DB_HOST: deb-vm-test
+            WORDPRESS_DB_USER: "$${uname1}"
+            WORDPRESS_DB_PASSWORD: "$${upwd}"
+            WORDPRESS_DB_NAME: "$${db1}"
+        volumes:
+            - site1:/var/www/html
+        links:
+            - 'mariadb'
+
+    site2:
+        image: wordpress
+        restart: always
+        ports:
+            - 8082:80
+	    - 442:443
+        env_file:
+            - variables.env
+        environment: 
+            WORDPRESS_DB_HOST: deb-vm-test
+            WORDPRESS_DB_USER: "$${uname2}"
+            WORDPRESS_DB_PASSWORD: "$${upwd}"
+            WORDPRESS_DB_NAME: "$${db2}"
+        volumes:
+            - site2:/var/www/html
+        links:
+            - 'mariadb'
+
+    nginx:
+        image: nginx
+        ports:
+            - 80:80
+	    - 443:443
+
+volumes:
+    site1:
+	driver: local
+        driver_opts:
+          type: none
+          o: bind
+          device: $$(udir)/site1
+    site2:
+	driver: local
+        driver_opts:
+          type: none
+          o: bind
+          device: $$(udir)/site2
